@@ -1,0 +1,21 @@
+siliconflow:
+  api_key: "sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg"
+  model: "qwen/qwen2.5-coder-7b-instruct"
+  base_url: "https://api.siliconflow.cn/v1"
+
+watcher:
+  debounce_delay: 1.0
+  file_pattern: "**/*.ets"
+  exclude_patterns:
+    - "**/node_modules/**"
+    - "**/.arkui/**"
+    - "**/build/**"
+    - "**/dist/**"
+    - "**/.hvigor/**"
+
+database:
+  path: "code_graph.db"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+*.log
+*.tmp
+
+# Pytest
+.pytest_cache/
+
+# Generated test project
+large-test-project/
+test-arkts-project/
+example-project/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+__pycache__/
+
+# Temporary
+temp/
+tmp/
+*.pyc
