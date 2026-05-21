@@ -27,8 +27,8 @@ class IncrementalUpdater:
 
         try:
             if not Path(file_path).exists():
-                logger.warning("file_not_found_skipping", file_path=file_path)
-                result["status"] = "skipped"
+                logger.warning("file_not_found_failed", file_path=file_path)
+                result["status"] = "failed"
                 result["error"] = "File not found"
                 return result
 

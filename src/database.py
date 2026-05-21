@@ -196,6 +196,7 @@ class CodeGraphDB:
         conn.execute("DELETE FROM properties WHERE file_id = ?", (file_id,))
         conn.execute("DELETE FROM imports WHERE file_id = ?", (file_id,))
         conn.execute("DELETE FROM calls WHERE caller_file_id = ?", (file_id,))
+        conn.commit()
 
     def insert_parsed_data(self, file_id: int, parsed: ParsedFile):
         conn = self._get_conn()
@@ -205,6 +206,7 @@ class CodeGraphDB:
         )
         func_map = {name: fid for fid, name in cursor.fetchall()}
 
+        # 插入函数
         for func in parsed.functions:
             cursor = conn.execute(
                 """INSERT INTO functions 
@@ -214,6 +216,8 @@ class CodeGraphDB:
             )
             func_map[func.name] = cursor.lastrowid
 
+        # 插入类，并记录 class_id 映射
+        class_name_to_id = {}
         for cls in parsed.classes:
             cursor = conn.execute(
                 """INSERT INTO classes
@@ -221,18 +225,35 @@ class CodeGraphDB:
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 cls.to_db_tuple(file_id)
             )
-            class_id = cursor.lastrowid
-            for prop in parsed.properties:
-                if prop.class_id is None:
-                    conn.execute(
-                        """INSERT INTO properties
-                           (file_id, class_id, name, type, modifiers, default_value)
-                           VALUES (?, ?, ?, ?, ?, ?)""",
-                        (file_id, class_id, prop.name, prop.type,
-                         json.dumps(prop.modifiers, ensure_ascii=False),
-                         prop.default_value)
-                    )
+            class_name_to_id[cls.name] = cursor.lastrowid
 
+        # 插入属性 - 修复了之前的逻辑错误
+        for prop in parsed.properties:
+            # 如果属性有 class_id（数字）或类名，尝试正确关联
+            target_class_id = prop.class_id
+            # 如果 class_id 是 None，或者是类名而不是数字
+            if isinstance(target_class_id, str):
+                target_class_id = class_name_to_id.get(target_class_id, None)
+            
+            conn.execute(
+                """INSERT INTO properties
+                   (file_id, class_id, name, type, modifiers, default_value)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (file_id, target_class_id, prop.name, prop.type,
+                 json.dumps(prop.modifiers, ensure_ascii=False),
+                 prop.default_value)
+            )
+
+        # 接口
+        for iface in parsed.interfaces:
+            cursor = conn.execute(
+                """INSERT INTO interfaces
+                   (file_id, name, extends, modifiers, start_line, end_line, doc_comment)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                iface.to_db_tuple(file_id)
+            )
+
+        # 导入
         for imp in parsed.imports:
             conn.execute(
                 """INSERT INTO imports
@@ -241,6 +262,7 @@ class CodeGraphDB:
                 imp.to_db_tuple(file_id)
             )
 
+        # 调用关系
         for call in parsed.calls:
             func_id = func_map.get(call.callee_name) if call.callee_name in func_map else None
             conn.execute(

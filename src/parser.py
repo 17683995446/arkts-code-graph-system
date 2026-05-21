@@ -64,6 +64,7 @@ class LocalArkTSParser:
         result = ParsedFile()
         
         lines = code.split('\n')
+        seen_functions = set()  # 用于避免重复解析
         
         for match in self.compiled_patterns['function'].finditer(code):
             generator_marker = match.group(1)
@@ -71,6 +72,12 @@ class LocalArkTSParser:
             params_str = match.group(3)
             return_type = match.group(4)
             start_line = code[:match.start()].count('\n') + 1
+            
+            # 检查是否已经解析过（通过函数名和起始行号组合避免重复）
+            func_key = (func_name, start_line)
+            if func_key in seen_functions:
+                continue
+            seen_functions.add(func_key)
             
             params = []
             if params_str.strip():
@@ -107,6 +114,11 @@ class LocalArkTSParser:
             return_type = match.group(4)
             start_line = code[:match.start()].count('\n') + 1
             
+            func_key = (func_name, start_line)
+            if func_key in seen_functions:
+                continue
+            seen_functions.add(func_key)
+            
             params = []
             if params_str.strip():
                 for param in params_str.split(','):
@@ -142,6 +154,11 @@ class LocalArkTSParser:
             return_type = match.group(4)
             start_line = code[:match.start()].count('\n') + 1
             
+            func_key = (func_name, start_line)
+            if func_key in seen_functions:
+                continue
+            seen_functions.add(func_key)
+            
             params = []
             if params_str.strip():
                 for param in params_str.split(','):
@@ -175,6 +192,11 @@ class LocalArkTSParser:
             params_str = match.group(4)
             return_type = match.group(5)
             start_line = code[:match.start()].count('\n') + 1
+            
+            func_key = (func_name, start_line)
+            if func_key in seen_functions:
+                continue
+            seen_functions.add(func_key)
             
             params = []
             if params_str.strip():

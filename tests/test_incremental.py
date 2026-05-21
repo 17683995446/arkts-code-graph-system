@@ -114,7 +114,7 @@ struct TestComponent {
         
         result = await updater.update_file("/nonexistent/file.ets")
         
-        assert result["status"] == "skipped"
+        assert result["status"] == "failed"
         assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
