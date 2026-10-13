@@ -28,7 +28,7 @@ def load_config(config_path: str = "config.yaml") -> dict:
         logger.warning("config_not_found_using_defaults", path=config_path)
         return {
             "siliconflow": {
-                "api_key": "sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg",
+                "api_key": "REDACTED_API_KEY",
                 "model": "qwen/qwen2.5-coder-7b-instruct",
                 "base_url": "https://api.siliconflow.cn/v1"
             },

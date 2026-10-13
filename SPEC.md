@@ -271,7 +271,7 @@ class ArkTSParser:
 ```yaml
 # config.yaml
 siliconflow:
-  api_key: "sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg"
+  api_key: "REDACTED_API_KEY"
   model: "qwen/qwen2.5-coder-7b-instruct"
   base_url: "https://api.siliconflow.cn/v1"
 
